@@ -5,7 +5,7 @@
 
 int main() {
    printf("sub bro\n");
-   int server_socket = socket(PF_INET, SOCK_STREAM, 0);
+   int socketfd = socket(PF_INET, SOCK_STREAM, 0); // create a socket file descriptor
 
    sockaddr_in addr;
    addr.sin_family = PF_INET;
@@ -16,10 +16,18 @@ int main() {
    else
       printf("Error: Invalid IP address format.\n");
 
-   if (bind(server_socket, (sockaddr *)(&addr), sizeof(addr)) != 0)
+   if (bind(socketfd, (sockaddr *)(&addr), sizeof(addr)) != 0)
       printf("Error: Failed to bind address to socket\n");
    else
       printf("Successfully bound address to socket\n");
+
+   constexpr int CONNECTION_LIMIT = 5;
+   if (listen(socketfd, CONNECTION_LIMIT) != 0)
+      printf("Error: Failed to listen");
+   else
+      printf("Listening...");
+
+   // accept();
 
    return 0;
 }
