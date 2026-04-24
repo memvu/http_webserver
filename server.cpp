@@ -28,28 +28,33 @@ int main() {
    else
       printf("Listening...");
 
-   int sin_size = sizeof(struct sockaddr_in);
-   int connected_socketfd;  // socket fd to communicate with a client
-   sockaddr_in client_addr; // ip addr of the client
+   while (true) {
+      int sin_size = sizeof(struct sockaddr_in);
+      int connected_socketfd;  // socket fd to communicate with a client
+      sockaddr_in client_addr; // ip addr of the client
 
-   connected_socketfd = accept(socketfd, (sockaddr *)&client_addr, (socklen_t *)&sin_size);
-   if (connected_socketfd == -1)
-      printf("Error: Failed to accept connection");
-   else
-      printf("Listening...");
+      connected_socketfd = accept(socketfd, (sockaddr *)&client_addr, (socklen_t *)&sin_size);
+      if (connected_socketfd == -1)
+         printf("Error: Failed to accept connection");
+      else
+         printf("Listening...");
 
-   constexpr int max_msg_len = 100;
-   char incoming_msg[max_msg_len];
+      constexpr int max_msg_len = 100;
+      char incoming_msg[max_msg_len];
 
-   int msg_signal = recv(connected_socketfd, incoming_msg, max_msg_len, 0);
-   if (msg_signal == -1) {
-      printf("Error: Failed to receive msg");
-   } else if (msg_signal == 0) {
-      printf("Client closed connection");
-   } else
-      printf("Msg received");
+      int msg_signal = recv(connected_socketfd, incoming_msg, max_msg_len, 0);
+      if (msg_signal == -1) {
+         printf("Error: Failed to receive msg");
+      } else if (msg_signal == 0) {
+         printf("Client closed connection");
+      } else
+         printf("Msg received");
 
-   close(socketfd); // delete the socket descriptor, disallowing any further connection.
+      // TODO:: send response to client
+      // TODO:: use epoll for non-blocking the program
+
+      close(socketfd); // delete the current socket descriptor, disallowing any further connection.
+   }
 
    return 0;
 }
