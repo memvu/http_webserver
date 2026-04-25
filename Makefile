@@ -1,2 +1,2 @@
-server: server.cpp
-		gcc -o server server.cpp
+server: server.c
+		gcc -o server server.c
