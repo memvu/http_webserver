@@ -6,29 +6,32 @@
 
 #define max_msg_len 100
 
+#define DEST_IP "127.0.0.1"
+#define DEST_PORT 8080
+
 int main() {
-   printf("sub bro\n");
+   printf("Server starting...");
    int socketfd = socket(PF_INET, SOCK_STREAM, 0); // create a socket file descriptor
 
    struct sockaddr_in addr;
    addr.sin_family = PF_INET;
-   addr.sin_port = htons(8080);
+   addr.sin_port = htons(DEST_PORT);
 
-   if (inet_aton("127.0.0.1", &addr.sin_addr))
-      printf("Binary address: %u\n", addr.sin_addr.s_addr);
+   if (inet_aton(DEST_IP, &addr.sin_addr))
+      printf("Bound IP address\n");
    else
-      printf("Error: Invalid IP address format.\n");
+      printf("Server Error: Invalid IP");
 
-   if (bind(socketfd, (struct sockaddr *)(&addr), sizeof(addr)) == -1)
+   if (bind(socketfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
       printf("Error: Failed to bind address to socket\n");
    else
       printf("Successfully bound address to socket\n");
 
    const int CONNECTION_LIMIT = 5;
    if (listen(socketfd, CONNECTION_LIMIT) == -1)
-      printf("Error: Failed to listen");
+      printf("Error: Failed to listen\n");
    else
-      printf("Listening...");
+      printf("Listening...\n");
 
    while (1) {
       int sin_size = sizeof(struct sockaddr_in);
@@ -37,24 +40,24 @@ int main() {
 
       connected_socketfd = accept(socketfd, (struct sockaddr *)&client_addr, (socklen_t *)&sin_size);
       if (connected_socketfd == -1)
-         printf("Error: Failed to accept connection");
+         printf("Error: Failed to accept connection\n");
       else
-         printf("Listening...");
+         printf("Listening...\n");
 
       char incoming_msg[max_msg_len];
 
       int msg_signal = recv(connected_socketfd, incoming_msg, max_msg_len, 0);
       if (msg_signal == -1) {
-         printf("Error: Failed to receive msg");
+         printf("Error: Failed to receive msg\n");
       } else if (msg_signal == 0) {
-         printf("Client closed connection");
+         printf("Client closed connection\n");
       } else
-         printf("Msg received");
+         printf("Msg received: %s\n", incoming_msg);
 
       // TODO:: send response to client
       // TODO:: use epoll for non-blocking the program
 
-      close(socketfd); // delete the current socket descriptor, disallowing any further connection.
+      close(connected_socketfd); // delete the current socket descriptor, disallowing any further connection.
    }
 
    return 0;
